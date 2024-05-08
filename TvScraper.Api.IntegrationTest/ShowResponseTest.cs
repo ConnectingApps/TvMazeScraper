@@ -19,7 +19,6 @@ public class ShowResponseTest : IDisposable
 
     public ShowResponseTest()
     {
-        // Set an environment variable
         _wireMockServer = WireMockServer.Start();
         var urlOfMockServer = _wireMockServer.Url!;
         Environment.SetEnvironmentVariable("BaseUrl", urlOfMockServer, EnvironmentVariableTarget.Process);
@@ -44,7 +43,7 @@ public class ShowResponseTest : IDisposable
     public async Task GetShowDataAsyncTest()
     {
         var now = DateTime.Now;
-        var idToUse = int.Parse($"{now.Hour}{now.Minute}{now.Second}");
+        var idToUse = int.Parse($"{now.Hour}{now.Minute}{now.Second}{now.Millisecond}");
         ConfigureServer(200, _tvMazeResponseShow1);
         var response = await _showApi.GetShowDataAsync(idToUse, 1);
         (response.StatusCode, 
@@ -52,8 +51,25 @@ public class ShowResponseTest : IDisposable
             _wireMockServer.LogEntries.Count(),
             response.Content?.FirstOrDefault()?.Cast.Length
             ).Should().Be((HttpStatusCode.OK, null, 1, 15));
+        _wireMockServer.LogEntries.Select(l => l.RequestMessage.Url).First().Should().
+            Contain(idToUse.ToString());
     }
+    
+    [Fact]
+    public async Task GetShowDataTwoTimesAsyncTest()
+    {
+        var now = DateTime.Now;
+        var idToUse = int.Parse($"{now.Hour}{now.Minute}{now.Second}{now.Millisecond}");
+        ConfigureServer(200, _tvMazeResponseShow1);
+        var responseA = await _showApi.GetShowDataAsync(idToUse, 1);
+        var responseB = await _showApi.GetShowDataAsync(idToUse, 1);
 
+        (responseA.StatusCode,
+            responseB.StatusCode,
+            _wireMockServer.LogEntries.Count()).
+            Should().Be((HttpStatusCode.OK, HttpStatusCode.OK, 1));
+    }
+    
     public void Dispose()
     {
         _webApplicationFactory.Dispose();
