@@ -54,6 +54,21 @@ public class ShowResponseTest : IDisposable
         _wireMockServer.LogEntries.Select(l => l.RequestMessage.Url).First().Should().
             Contain(idToUse.ToString());
     }
+    
+    [Theory]
+    [InlineData(2)]
+    [InlineData(3)]
+    public async Task GetShowDataAsyncRangeTest(int pageSize)
+    {
+        var now = DateTime.Now;
+        var idToUse = int.Parse($"{now.Hour}{now.Minute}{now.Second}{now.Millisecond}");
+        ConfigureServer(200, _tvMazeResponseShow1);
+        var response = await _showApi.GetShowDataAsync(idToUse, pageSize);
+        (response.StatusCode, 
+                response.Content?.Count,
+                response.Error?.Content).Should()
+            .Be((HttpStatusCode.OK, pageSize, null));
+    }
 
     [Theory]
     [InlineData(1,-1)]
