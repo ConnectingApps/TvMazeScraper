@@ -54,6 +54,17 @@ public class ShowResponseTest : IDisposable
         _wireMockServer.LogEntries.Select(l => l.RequestMessage.Url).First().Should().
             Contain(idToUse.ToString());
     }
+
+    [Theory]
+    [InlineData(1,-1)]
+    [InlineData(1,0)]
+    [InlineData(-1,1)]
+    public async Task GetShowDataBadRequestTest(int pageNumber, int pageSize)
+    {
+        ConfigureServer(200, _tvMazeResponseShow1);
+        var response = await _showApi.GetShowDataAsync(pageNumber, pageSize);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
     
     [Fact]
     public async Task GetShowDataTwoTimesAsyncTest()

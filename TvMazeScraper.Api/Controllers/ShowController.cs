@@ -17,6 +17,10 @@ public class ShowController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ShowResponse>>> GetShows(int pageNumber = 1, int pageSize = 10)
     {
+        if (pageNumber < 1 || pageSize < 1)
+        {
+            return BadRequest("Wrong parameter values");
+        }
         var toReturn = await _dataAccess.GetResponsesAsync(pageNumber, pageSize);
         return Ok(toReturn.ToList());
     }
