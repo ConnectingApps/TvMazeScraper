@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using Polly;
 using TvMaze.Client;
 using TvMazeScraper.Api.EF;
 
@@ -33,11 +34,16 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddScoped<IDataAccess, DataAccess>();
         var baseUrl = builder.Configuration.GetValue<string>("BaseUrl")!;
-
         builder.Services.AddScoped<IShowContentRepository, ShowContentRepository>();
         
+        var maxCalls = builder.Configuration.GetValue<int>("MaxCalls")!;
+        var maxSeconds = builder.Configuration.GetValue<int>("MaxSeconds")!;
+        var baseRateLimitPolicy = Policy.RateLimitAsync(maxCalls, TimeSpan.FromSeconds(maxSeconds));
+        var rateLimitPolicy = baseRateLimitPolicy.AsAsyncPolicy<HttpResponseMessage>();
+        
         builder.Services.AddRefitClient<IMazeApi>()
-            .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl))
+            .AddPolicyHandler(rateLimitPolicy); 
 
         builder.Services.AddDbContext<MazeContext>(options =>
             options.UseNpgsql(dataSource));

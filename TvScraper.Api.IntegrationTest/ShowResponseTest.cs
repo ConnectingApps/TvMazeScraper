@@ -33,7 +33,7 @@ public class ShowResponseTest : IDisposable
         _wireMockServer.Given(Request.Create().UsingGet())
             .RespondWith(
                 Response.Create()
-                    .WithStatusCode(200) // HTTP status code 200
+                    .WithStatusCode(statusCode) // HTTP status code 200
                     .WithBody(jsonResponse) // Response body with the long JSON string
                     .WithHeader("Content-Type", "application/json") // Content-Type header
             );
@@ -63,7 +63,8 @@ public class ShowResponseTest : IDisposable
     {
         ConfigureServer(200, _tvMazeResponseShow1);
         var response = await _showApi.GetShowDataAsync(pageNumber, pageSize);
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        (response.StatusCode, _wireMockServer.LogEntries.Count()).Should()
+            .Be((HttpStatusCode.BadRequest, 0));
     }
     
     [Fact]
