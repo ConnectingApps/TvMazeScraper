@@ -25,4 +25,13 @@ jobs:
 
     - name: Build
       run: dotnet build --configuration Release --no-restore
-      
+
+    - name: Run Tests
+      run: python -c "import os; os.system('dotnet test TvMazeScraper.sln --configuration Release --no-build --verbosity normal  --logger trx');"  
+    
+    - name: Publish Test Results
+      uses: dorny/test-reporter@v1
+      with:
+        name: 'Test Results'
+        path: '**/TestResults/**/*.trx'
+        reporter: 'dotnet-trx'      
