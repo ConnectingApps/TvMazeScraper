@@ -42,4 +42,4 @@ dotnet run
 ```
 
 ## API Usage
-The REST API can be accessed at `http://localhost:5000/swagger`.
+The REST API can be accessed at `http://localhost:5059/swagger`.
