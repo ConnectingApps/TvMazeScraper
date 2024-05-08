@@ -2,6 +2,6 @@
 {
     public class Embedded
     {
-        public Cast[] Cast { get; set; }
+        public Cast[] Cast { get; set; } = null!;
     }
 }

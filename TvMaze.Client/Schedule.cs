@@ -2,7 +2,7 @@
 {
     public class Schedule
     {
-        public string Time { get; set; }
-        public string[] Days { get; set; }
+        public string Time { get; set; } = null!;
+        public string[] Days { get; set; } = null!;
     }
 }

@@ -1,4 +1,8 @@
+using TvMaze.Client;
+
 namespace TvMazeScraper.Api;
+
+using Refit;
 
 public class Program
 {
@@ -12,6 +16,11 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddScoped<IDataAccess, DataAccess>();
+        var baseUrl = builder.Configuration.GetValue<string>("BaseUrl")!;
+        
+        builder.Services.AddRefitClient<IMazeApi>()
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
 
         var app = builder.Build();
 

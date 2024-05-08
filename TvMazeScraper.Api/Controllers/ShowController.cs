@@ -7,9 +7,17 @@ namespace TvMazeScraper.Api.Controllers;
 [Route("[controller]")]
 public class ShowController : ControllerBase
 {
+    private readonly IDataAccess _dataAccess;
+
+    public ShowController(IDataAccess dataAccess)
+    {
+        _dataAccess = dataAccess;
+    }
+    
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ShowResponse>>> GetShows(int pageNumber = 1, int pageSize = 10)
     {
-        throw new NotImplementedException();
+        var toReturn = await _dataAccess.GetResponsesAsync(1, 1);
+        return Ok(toReturn.ToList());
     }
 }

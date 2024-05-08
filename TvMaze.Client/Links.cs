@@ -2,7 +2,7 @@
 {
     public class Links
     {
-        public Self Self { get; set; }
-        public Previousepisode Previousepisode { get; set; }
+        public Self Self { get; set; } = null!;
+        public Previousepisode Previousepisode { get; set; } = null!;
     }
 }

@@ -2,8 +2,8 @@
 {
     public class Country
     {
-        public string Name { get; set; }
-        public string Code { get; set; }
-        public string Timezone { get; set; }
+        public string Name { get; set; } = null!;
+        public string Code { get; set; } = null!;
+        public string Timezone { get; set; } = null!;
     }
 }

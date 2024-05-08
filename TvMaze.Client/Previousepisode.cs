@@ -2,7 +2,7 @@
 {
     public class Previousepisode
     {
-        public string Href { get; set; }
-        public string Name { get; set; }
+        public string? Href { get; set; }
+        public string? Name { get; set; }
     }
 }

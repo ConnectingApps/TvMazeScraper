@@ -2,6 +2,6 @@
 {
     public class Self
     {
-        public string Href { get; set; }
+        public string Href { get; set; } = null!;
     }
 }

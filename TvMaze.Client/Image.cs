@@ -2,7 +2,7 @@
 {
     public class Image
     {
-        public string Medium { get; set; }
-        public string Original { get; set; }
+        public string Medium { get; set; } = null!;
+        public string Original { get; set; } = null!;
     }
 }
