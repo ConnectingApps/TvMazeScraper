@@ -26,6 +26,9 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
+    - name: Start Database Server
+      run: docker run --name postgres-db -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres 
+
     - name: Run Tests
       run: python -c "import os; os.system('dotnet test TvMazeScraper.sln --configuration Release --no-build --verbosity normal  --logger trx');"  
     
