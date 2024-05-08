@@ -17,7 +17,7 @@ public class ShowController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ShowResponse>>> GetShows(int pageNumber = 1, int pageSize = 10)
     {
-        var toReturn = await _dataAccess.GetResponsesAsync(1, 1);
+        var toReturn = await _dataAccess.GetResponsesAsync(pageNumber, pageSize);
         return Ok(toReturn.ToList());
     }
 }

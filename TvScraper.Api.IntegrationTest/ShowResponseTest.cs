@@ -43,8 +43,10 @@ public class ShowResponseTest : IDisposable
     [Fact]
     public async Task GetShowDataAsyncTest()
     {
+        var now = DateTime.Now;
+        var idToUse = int.Parse($"{now.Hour}{now.Minute}{now.Second}");
         ConfigureServer(200, _tvMazeResponseShow1);
-        var response = await _showApi.GetShowDataAsync(1, 1);
+        var response = await _showApi.GetShowDataAsync(idToUse, 1);
         (response.StatusCode, 
             response.Error?.Content,
             _wireMockServer.LogEntries.Count(),
