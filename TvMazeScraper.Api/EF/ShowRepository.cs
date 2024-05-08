@@ -17,6 +17,20 @@ public class ShowContentRepository : IShowContentRepository
     {
         return await _context.MyModels.AnyAsync(sc => sc.ExternalId == externalId);
     }
+    
+    public async Task<ShowContent?[]> GetMultiAsync(int[]? externalIds)
+    {
+        if (externalIds == null || externalIds.Length == 0)
+        {
+            return Array.Empty<ShowContent?>().ToArray();
+        }
+
+        var records = await _context.MyModels
+            .Where(m => externalIds.Contains(m.ExternalId))
+            .ToArrayAsync();
+        return records;
+    }
+    
 
     public async Task<ShowContent?> GetAsync(int externalId)
     {
@@ -32,6 +46,16 @@ public class ShowContentRepository : IShowContentRepository
         };
 
         _context.MyModels.Add(newRecord);
+        await _context.SaveChangesAsync();
+    }
+    
+    public async Task CreateRecordsAsync((int externalId, Show content)[] records)
+    {
+        _context.MyModels.AddRange(records.Select(r => new ShowContent
+        {
+            ExternalId = r.externalId,
+            Content = r.content
+        }));
         await _context.SaveChangesAsync();
     }
 }
