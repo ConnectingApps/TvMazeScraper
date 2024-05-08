@@ -37,6 +37,7 @@ dotnet build
 Then, run the application:
 
 ```bash
+cd TvMazeScraper.Api
 dotnet run
 ```
 
