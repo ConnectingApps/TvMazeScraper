@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using TvMaze.Client;
+using TvMazeScraper.Api.EF;
 
 namespace TvMazeScraper.Api;
 
@@ -21,8 +23,18 @@ public class Program
         
         builder.Services.AddRefitClient<IMazeApi>()
             .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
-
+        var connectionString = builder.Configuration.GetConnectionString("MazeDatabase");
+        
+        builder.Services.AddDbContext<MazeContext>(options =>
+            options.UseNpgsql(connectionString));
+        
         var app = builder.Build();
+        
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<MazeContext>();
+            dbContext.Database.Migrate();
+        }
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
