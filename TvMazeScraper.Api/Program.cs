@@ -36,8 +36,8 @@ public class Program
         var baseUrl = builder.Configuration.GetValue<string>("BaseUrl")!;
         builder.Services.AddScoped<IShowContentRepository, ShowContentRepository>();
         
-        var maxCalls = builder.Configuration.GetValue<int>("MaxCalls")!;
-        var maxSeconds = builder.Configuration.GetValue<int>("MaxSeconds")!;
+        var maxCalls = builder.Configuration.GetValue<int>("MaxCalls");
+        var maxSeconds = builder.Configuration.GetValue<int>("MaxSeconds");
         var baseRateLimitPolicy = Policy.RateLimitAsync(maxCalls, TimeSpan.FromSeconds(maxSeconds));
         var rateLimitPolicy = baseRateLimitPolicy.AsAsyncPolicy<HttpResponseMessage>();
         
