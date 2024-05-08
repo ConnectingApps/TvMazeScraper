@@ -32,6 +32,7 @@ public class DataAccess : IDataAccess
             Name = show.Name,
             Cast = show.Embedded.Cast.Select(c => new Cast
             {
+                Id = c.Character.Id,
                 Name = c.Person.Name,
                 Birthday = c.Person.Birthday
             }).OrderByDescending(d => d.Birthday == null ? DateOnly.MinValue : DateOnly.Parse(d.Birthday)).ToArray()
