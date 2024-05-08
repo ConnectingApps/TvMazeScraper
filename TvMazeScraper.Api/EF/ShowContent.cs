@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TvMaze.Client;
 
 namespace TvMazeScraper.Api.EF;
 
@@ -11,5 +12,5 @@ public class ShowContent
 
     public int ExternalId { get; set; } // Unique constraint is set in OnModelCreating
 
-    public JsonContent Content { get; set; } = null!;
+    public Show Content { get; set; } = null!;
 }

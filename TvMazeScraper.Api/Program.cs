@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using TvMaze.Client;
 using TvMazeScraper.Api.EF;
 
@@ -11,22 +12,35 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var connectionString = builder.Configuration.GetConnectionString("MazeDatabase");
 
         // Add services to the container.
 
+        //NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder
+        {
+            ConnectionStringBuilder = { ConnectionString = connectionString}
+        };
+
+        dataSourceBuilder.EnableDynamicJson();  // Enable dynamic JSON
+
+        // Register the custom data source with Npgsql
+        var dataSource = dataSourceBuilder.Build();
+        
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddScoped<IDataAccess, DataAccess>();
         var baseUrl = builder.Configuration.GetValue<string>("BaseUrl")!;
+
+        builder.Services.AddScoped<IShowContentRepository, ShowContentRepository>();
         
         builder.Services.AddRefitClient<IMazeApi>()
             .ConfigureHttpClient(c => c.BaseAddress = new Uri(baseUrl));
-        var connectionString = builder.Configuration.GetConnectionString("MazeDatabase");
-        
+
         builder.Services.AddDbContext<MazeContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(dataSource));
         
         var app = builder.Build();
         
