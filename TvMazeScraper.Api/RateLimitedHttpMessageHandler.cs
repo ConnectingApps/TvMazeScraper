@@ -5,11 +5,13 @@ public class RateLimitedHttpMessageHandler : DelegatingHandler
     private readonly SemaphoreSlim _semaphore;
     private readonly Timer _timer;
     private readonly int _maxCalls;
+    private int _acquiredCount;
 
     public RateLimitedHttpMessageHandler(int maxCalls, TimeSpan timeSpan)
     {
         _maxCalls = maxCalls;
         _semaphore = new SemaphoreSlim(maxCalls, maxCalls);
+        _acquiredCount = 0;
 
         // Timer to periodically reset the semaphore capacity
         _timer = new Timer(ReleaseSemaphoreSlots!, null, timeSpan, timeSpan);
@@ -18,6 +20,7 @@ public class RateLimitedHttpMessageHandler : DelegatingHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         await _semaphore.WaitAsync(cancellationToken);
+        Interlocked.Increment(ref _acquiredCount);
         try
         {
             return await base.SendAsync(request, cancellationToken);
@@ -25,15 +28,20 @@ public class RateLimitedHttpMessageHandler : DelegatingHandler
         finally
         {
             _semaphore.Release();
+            Interlocked.Decrement(ref _acquiredCount);
         }
     }
 
     private void ReleaseSemaphoreSlots(object state)
     {
-        int slotsToRelease = _maxCalls - _semaphore.CurrentCount;
-        if (slotsToRelease > 0)
+        // Ensure we do not release more slots than have been acquired
+        int currentCount = _semaphore.CurrentCount;
+        int slotsToRelease = _maxCalls - currentCount;
+        int safeReleaseCount = Math.Min(slotsToRelease, _acquiredCount);
+
+        if (safeReleaseCount > 0)
         {
-            _semaphore.Release(slotsToRelease);
+            _semaphore.Release(safeReleaseCount);
         }
     }
 
