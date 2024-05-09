@@ -8,11 +8,11 @@ public class RateLimitedHttpMessageHandler : DelegatingHandler
 
     public RateLimitedHttpMessageHandler(int maxCalls, TimeSpan timeSpan)
     {
-        this._maxCalls = maxCalls;
+        _maxCalls = maxCalls;
         _semaphore = new SemaphoreSlim(maxCalls, maxCalls);
 
         // Timer to periodically reset the semaphore capacity
-        _timer = new Timer(ReleaseSemaphoreSlots, null, timeSpan, timeSpan);
+        _timer = new Timer(ReleaseSemaphoreSlots!, null, timeSpan, timeSpan);
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -41,8 +41,8 @@ public class RateLimitedHttpMessageHandler : DelegatingHandler
     {
         if (disposing)
         {
-            _timer?.Dispose();
-            _semaphore?.Dispose();
+            _timer.Dispose();
+            _semaphore.Dispose();
         }
         base.Dispose(disposing);
     }

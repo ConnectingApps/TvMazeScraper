@@ -2,10 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using TvMaze.Client;
 using TvMazeScraper.Api.EF;
+using Refit;
 
 namespace TvMazeScraper.Api;
-
-using Refit;
 
 public class Program
 {
@@ -15,8 +14,6 @@ public class Program
         var connectionString = builder.Configuration.GetConnectionString("MazeDatabase");
 
         // Add services to the container.
-
-        //NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
         var dataSourceBuilder = new NpgsqlDataSourceBuilder
         {
             ConnectionStringBuilder = { ConnectionString = connectionString}
