@@ -43,3 +43,6 @@ dotnet run
 
 ## API Usage
 The REST API can be accessed at `http://localhost:5059/swagger`.
+Alternatively, open this url
+`http://localhost:5059/Show?pageNumber=80&pageSize=2`
+in your website to see a direct result.
