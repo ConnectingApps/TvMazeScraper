@@ -22,11 +22,23 @@ public class DataAccess : IDataAccess
 
     public async Task<IEnumerable<ShowResponse>> GetResponsesAsync(int pageNumber, int pageSize)
     {
-        var requestsTasks = Enumerable.Range(pageNumber, pageSize)
-            .Select(GetTvMazeAsync)
-            .ToList();
+        var idRange = Enumerable.Range(pageNumber, pageSize).ToArray();
+        var dbResults = await _showContentRepository.GetMultiAsync(idRange);
+
+        var missingDbResults = idRange.Where(idValue => dbResults.All(dbResult => dbResult.Id != idValue))
+            .ToArray();
+        
+        var requestsTasks = missingDbResults
+            .Select(async m =>
+            {
+                var response = await CallTvMazeAsync(m);
+                return (m, response);
+            })
+            .ToArray();
         var tvMazeResponses = await Task.WhenAll(requestsTasks);
-        return tvMazeResponses.Select(ToShowResponse);
+        await _showContentRepository.CreateRecordsAsync(tvMazeResponses);
+        var showResponsesFromRequest = tvMazeResponses.Select(t => ToShowResponse(t.response));
+        return showResponsesFromRequest.Concat(dbResults);
     }
 
     private async Task<Show> GetTvMazeAsync(int id)

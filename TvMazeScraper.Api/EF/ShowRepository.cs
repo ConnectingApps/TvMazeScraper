@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TvMaze.Client;
+using TvMazeScraper.Api.InternalModels;
+using Cast = TvMazeScraper.Api.InternalModels.Cast;
 
 namespace TvMazeScraper.Api.EF;
 
@@ -18,7 +20,7 @@ public class ShowContentRepository : IShowContentRepository
         return await _context.MyModels.AnyAsync(sc => sc.ExternalId == externalId);
     }
     
-    public async Task<ShowContent?[]> GetMultiAsync(int[]? externalIds)
+    public async Task<ShowContent?[]> GetMultiAsyncOld(int[]? externalIds)
     {
         if (externalIds == null || externalIds.Length == 0)
         {
@@ -30,6 +32,37 @@ public class ShowContentRepository : IShowContentRepository
             .ToArrayAsync();
         return records;
     }
+    
+    public async Task<ShowResponse[]> GetMultiAsync(int[]? externalIds)
+    {
+        if (externalIds == null || externalIds.Length == 0)
+        {
+            return Array.Empty<ShowResponse>().ToArray();
+        }
+        
+        var records = await _context.MyModels
+            .Where(m => externalIds.Contains(m.ExternalId))
+            .Select(r => new 
+            {
+                r.ExternalId,
+                r.Content
+            })
+            .ToListAsync();
+
+        var result = records.Select(r => new ShowResponse
+        {
+            Name = r.Content.Name,
+            Id = r.ExternalId,
+            Cast = r.Content.Embedded.Cast.Select(c => new Cast()
+                {
+                    Id = c.Character.Id,
+                    Name = c.Person.Name,
+                    Birthday = c.Person.Birthday
+                }).OrderByDescending(d => d.Birthday == null ? DateOnly.MinValue : DateOnly.Parse(d.Birthday))
+                .ToArray()
+        }).ToArray();
+        return result;
+    }    
     
 
     public async Task<ShowContent?> GetAsync(int externalId)
