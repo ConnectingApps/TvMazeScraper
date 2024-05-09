@@ -13,7 +13,7 @@ namespace TvMazeScraper.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "MyModels",
+                name: "Responses",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -27,7 +27,7 @@ namespace TvMazeScraper.Api.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_MyModels_ExternalId",
-                table: "MyModels",
+                table: "Responses",
                 column: "ExternalId",
                 unique: true);
         }
@@ -36,7 +36,7 @@ namespace TvMazeScraper.Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "MyModels");
+                name: "Responses");
         }
     }
 }

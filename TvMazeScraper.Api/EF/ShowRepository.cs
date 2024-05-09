@@ -17,7 +17,7 @@ public class ShowContentRepository : IShowContentRepository
     // Async method to check if a record exists based on external ID
     public async Task<bool> RecordExistsAsync(int externalId)
     {
-        return await _context.MyModels.AnyAsync(sc => sc.ExternalId == externalId);
+        return await _context.Responses.AnyAsync(sc => sc.ExternalId == externalId);
     }
     
     public async Task<ShowContent?[]> GetMultiAsyncOld(int[]? externalIds)
@@ -27,7 +27,7 @@ public class ShowContentRepository : IShowContentRepository
             return Array.Empty<ShowContent?>().ToArray();
         }
 
-        var records = await _context.MyModels
+        var records = await _context.Responses
             .Where(m => externalIds.Contains(m.ExternalId))
             .ToArrayAsync();
         return records;
@@ -40,7 +40,7 @@ public class ShowContentRepository : IShowContentRepository
             return Array.Empty<ShowResponse>().ToArray();
         }
         
-        var records = await _context.MyModels
+        var records = await _context.Responses
             .Where(m => externalIds.Contains(m.ExternalId))
             .Select(r => new 
             {
@@ -67,7 +67,7 @@ public class ShowContentRepository : IShowContentRepository
 
     public async Task<ShowContent?> GetAsync(int externalId)
     {
-        return await _context.MyModels.FirstOrDefaultAsync(m => m.ExternalId == externalId);
+        return await _context.Responses.FirstOrDefaultAsync(m => m.ExternalId == externalId);
     }
     
     public async Task CreateRecordAsync(int externalId, Show content)
@@ -78,13 +78,13 @@ public class ShowContentRepository : IShowContentRepository
             Content = content
         };
 
-        _context.MyModels.Add(newRecord);
+        _context.Responses.Add(newRecord);
         await _context.SaveChangesAsync();
     }
     
     public async Task CreateRecordsAsync((int externalId, Show content)[] records)
     {
-        _context.MyModels.AddRange(records.Select(r => new ShowContent
+        _context.Responses.AddRange(records.Select(r => new ShowContent
         {
             ExternalId = r.externalId,
             Content = r.content

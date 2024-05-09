@@ -41,7 +41,7 @@ namespace TvMazeScraper.Api.Migrations
                     b.HasIndex("ExternalId")
                         .IsUnique();
 
-                    b.ToTable("MyModels");
+                    b.ToTable("Responses");
                 });
 #pragma warning restore 612, 618
         }

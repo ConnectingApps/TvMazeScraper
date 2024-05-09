@@ -9,7 +9,7 @@ public class MazeContext : DbContext
     {
     }
 
-    public DbSet<ShowContent> MyModels { get; set; }
+    public DbSet<ShowContent> Responses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
