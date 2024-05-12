@@ -10,10 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-22.04
 
-    env:  # Setting environment variable at the job level
-      WORKSPACE_ID: ${{ secrets.WORKSPACE_ID }}
-      SHARED_KEY: ${{ secrets.SHARED_KEY }} 
-
     steps:
     - uses: actions/checkout@v4
       with:
